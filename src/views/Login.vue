@@ -37,6 +37,20 @@ const rules = {
         { validator: checkRePassword, trigger: 'blur' }
     ]
 }
+
+// 調用後端接口完成註冊
+import {userRegisterService} from '@/api/user.js' 
+const register = async()=>{
+    // registerData是響應式對象，需要添加value獲取值
+    let result = await userRegisterService(registerData.value);
+    if(result.code===0){
+        // 成功
+        alert(result.msg?result.msg:'註冊成功');
+    }else{
+        // 失敗
+        alert('註冊失敗')
+    }
+}
 </script>
 
 <template>
@@ -61,7 +75,7 @@ const rules = {
                 </el-form-item>
                 <!-- 註冊按鈕 -->
                 <el-form-item>
-                    <el-button class="button" type="primary" auto-insert-space>
+                    <el-button class="button" type="primary" auto-insert-space @click="register">
                         註冊
                     </el-button>
                 </el-form-item>

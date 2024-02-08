@@ -13,7 +13,7 @@ instance.interceptors.response.use(
         return result.data;
     },
     err=>{
-        alert('服务异常');
+        alert('服務異常');
         return Promise.reject(err);//异步的状态转化成失败的状态
     }
 )
