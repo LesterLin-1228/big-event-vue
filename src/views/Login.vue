@@ -39,8 +39,8 @@ const rules = {
 }
 
 // 調用後端接口完成註冊
-import {userRegisterService,userLoginService} from '@/api/user.js' 
-const register = async()=>{
+import { userRegisterService, userLoginService } from '@/api/user.js'
+const register = async () => {
     // registerData是響應式對象，需要添加value獲取值
     let result = await userRegisterService(registerData.value);
     // if(result.code===0){
@@ -51,13 +51,15 @@ const register = async()=>{
     //     alert(result.message);
     // }
     // alert(result.message);
-    ElMessage.success(result.message)
+    ElMessage.success('註冊成功')
 }
 
 // 綁定數據，重複使用註冊表單的數據模型
 // 表單數據校驗
 // 登入函數
-const login = async()=>{
+import { useRouter } from 'vue-router' // useRouter是Vue框架中的一個函數，用於在Vue組件中獲取路由器（router）對象。
+const router = useRouter()
+const login = async () => {
     // 調用接口完成登入
     let result = await userLoginService(registerData.value);
     // if(result.code===0){
@@ -66,12 +68,14 @@ const login = async()=>{
     //     alert(result.message);
     // }
     // alert(result.message);
-    ElMessage.success(result.message)
+    ElMessage.success('登入成功')
+    // 跳轉首頁 借助路由完成跳轉
+    router.push('/')
 }
 
 // 定義函數清空數據模型內的數據
-const clearRegisterData = ()=>{
-    registerData.value={
+const clearRegisterData = () => {
+    registerData.value = {
         username: '',
         password: '',
         rePassword: ''
@@ -107,7 +111,7 @@ const clearRegisterData = ()=>{
                     </el-button>
                 </el-form-item>
                 <el-form-item class="flex">
-                    <el-link type="info" :underline="false" @click="isRegister = false;clearRegisterData()">
+                    <el-link type="info" :underline="false" @click="isRegister = false; clearRegisterData()">
                         ← 返回
                     </el-link>
                 </el-form-item>
@@ -121,7 +125,8 @@ const clearRegisterData = ()=>{
                     <el-input :prefix-icon="User" placeholder="請輸入用戶名" v-model="registerData.username"></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input name="password" :prefix-icon="Lock" type="password" placeholder="請輸入密碼" v-model="registerData.password"></el-input>
+                    <el-input name="password" :prefix-icon="Lock" type="password" placeholder="請輸入密碼"
+                        v-model="registerData.password"></el-input>
                 </el-form-item>
                 <el-form-item class="flex">
                     <div class="flex">
@@ -134,7 +139,7 @@ const clearRegisterData = ()=>{
                     <el-button class="button" type="primary" auto-insert-space @click="login">登入</el-button>
                 </el-form-item>
                 <el-form-item class="flex">
-                    <el-link type="info" :underline="false" @click="isRegister = true;clearRegisterData()">
+                    <el-link type="info" :underline="false" @click="isRegister = true; clearRegisterData()">
                         註冊 →
                     </el-link>
                 </el-form-item>
