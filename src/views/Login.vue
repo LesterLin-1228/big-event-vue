@@ -1,7 +1,7 @@
 <script setup>
 import { User, Lock } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-
+import { ElMessage } from 'element-plus'
 // 控制註冊和登入表單的顯示， 默認顯示註冊
 const isRegister = ref(false)
 
@@ -43,13 +43,15 @@ import {userRegisterService,userLoginService} from '@/api/user.js'
 const register = async()=>{
     // registerData是響應式對象，需要添加value獲取值
     let result = await userRegisterService(registerData.value);
-    if(result.code===0){
-        // 成功
-        alert(result.message);
-    }else{
-        // 失敗
-        alert(result.message);
-    }
+    // if(result.code===0){
+    //     // 成功
+    //     alert(result.message);
+    // }else{
+    //     // 失敗
+    //     alert(result.message);
+    // }
+    // alert(result.message);
+    ElMessage.success(result.message)
 }
 
 // 綁定數據，重複使用註冊表單的數據模型
@@ -58,11 +60,13 @@ const register = async()=>{
 const login = async()=>{
     // 調用接口完成登入
     let result = await userLoginService(registerData.value);
-    if(result.code===0){
-        alert(result.message);
-    }else{
-        alert(result.message);
-    }
+    // if(result.code===0){
+    //     alert(result.message);
+    // }else{
+    //     alert(result.message);
+    // }
+    // alert(result.message);
+    ElMessage.success(result.message)
 }
 
 // 定義函數清空數據模型內的數據
