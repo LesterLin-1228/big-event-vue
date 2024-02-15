@@ -33,13 +33,40 @@ const onCurrentChange = (num) => {
 }
 
 // 調用接口獲取文章分類數據
-import { articleCategoryListService } from '@/api/article.js'
+import { articleCategoryListService, articleListService } from '@/api/article.js'
 const articleCategoryList = async () => {
     let result = await articleCategoryListService();
 
     categories.value = result.data;
 }
 articleCategoryList();
+
+// 獲取文章列表數據
+const articleList = async () => {
+    let params = {
+        pageNum: pageNum.value,
+        pageSize: pageSize.value,
+        categoryId: categoryId.value ? categoryId.value : null,
+        state: state.value ? state.value : null
+    }
+    let result = await articleListService(params);
+
+    // 渲染視圖
+    total.value = result.data.total;
+    articles.value = result.data.items;
+
+    // 處理數據，給數據模型擴展一個屬性categoryName(分類名稱)
+    for (let i = 0; i < articles.value.length; i++) {
+        let article = articles.value[i];
+        for (let j = 0; j < categories.value.length; j++) {
+            if (article.categoryId == categories.value[j].id) {
+                article.categoryName = categories.value[j].categoryName;
+            }
+        }
+
+    }
+}
+articleList();
 
 </script>
 <template>
@@ -75,7 +102,7 @@ articleCategoryList();
         <!-- 文章列表 -->
         <el-table :data="articles" style="width: 100%">
             <el-table-column label="文章標題" width="400" prop="title"></el-table-column>
-            <el-table-column label="分類" prop="categoryId"></el-table-column>
+            <el-table-column label="分類" prop="categoryName"></el-table-column>
             <el-table-column label="發布時間" prop="createTime"> </el-table-column>
             <el-table-column label="狀態" prop="state"></el-table-column>
             <el-table-column label="操作" width="100">

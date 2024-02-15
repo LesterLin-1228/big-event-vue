@@ -22,3 +22,8 @@ export const articleCategoryUpdateService = (categoryData) => {
 export const articleCategoryDeleteService = (id) => {
     return request.delete('/category?id=' + id)
 }
+
+// 文章列表查詢(條件分頁)
+export const articleListService = (params) => {
+    return request.get('/article', { params: params })
+}
