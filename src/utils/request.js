@@ -27,6 +27,9 @@ instance.interceptors.request.use(
     }
 )
 
+// import { useRouter } from 'vue-router';
+// const router = useRouter();
+import router from '@/router'
 // 添加響應攔截器
 instance.interceptors.response.use(
     result => {
@@ -43,7 +46,13 @@ instance.interceptors.response.use(
         return Promise.reject(result.data)
     },
     err => {
-        alert('服務異常');
+        // 判斷響應狀態碼，如果為401，表示未登入，提示請登入並跳轉到登入頁面
+        if (err.response.status === 401) {
+            ElMessage.error('請先登入')
+            router.push('/login')
+        } else {
+            ElMessage.error('服務異常')
+        }
         return Promise.reject(err);// 異步的狀態轉成失敗的狀態
     }
 )

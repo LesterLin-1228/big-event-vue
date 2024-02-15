@@ -9,6 +9,7 @@ import ArticleManageVue from "@/views/article/ArticleManage.vue";
 import UserAvatarVue from "@/views/user/UserAvatar.vue";
 import UserInfoVue from "@/views/user/UserInfo.vue";
 import UserResetPasswordVue from "@/views/user/UserResetPassword.vue";
+
 // 定義路由關係
 const routes = [
     { path: '/login', component: LoginVue },
