@@ -12,3 +12,8 @@ export const articleCategoryListService = () => {
 export const articleCategoryAddService = (categoryData) => {
     return request.post('/category', categoryData)
 }
+
+// 文章分類修改
+export const articleCategoryUpdateService = (categoryData) => {
+    return request.put('/category', categoryData)
+}

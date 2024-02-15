@@ -10,7 +10,7 @@ const categories = ref([
 ])
 
 // 聲明一個異步函數
-import { articleCategoryListService, articleCategoryAddService } from '@/api/article.js'
+import { articleCategoryListService, articleCategoryAddService, articleCategoryUpdateService } from '@/api/article.js'
 const articleCategoryList = async () => {
     let result = await articleCategoryListService();
     categories.value = result.data;
@@ -59,6 +59,23 @@ const showDialog = (row) => {
     // 擴展id屬性，傳到後端完成分類的修改
     categoryModel.value.id = row.id;
 }
+
+// 編輯分類
+const updateCategory = async () => {
+    // 調用接口
+    let result = await articleCategoryUpdateService(categoryModel.value);
+    ElMessage.success('修改成功')
+
+    // 調用獲取所有文章分類的函數
+    articleCategoryList();
+    dialogVisible.value = false;
+}
+
+// 清空模型數據
+const clearData = () => {
+    categoryModel.value.categoryName = '';
+    categoryModel.value.categoryAlias = '';
+}
 </script>
 <template>
     <el-card class="page-container">
@@ -66,7 +83,7 @@ const showDialog = (row) => {
             <div class="header">
                 <span>文章分類</span>
                 <div class="extra">
-                    <el-button type="primary" @click="dialogVisible = true; title = '添加分類'">添加分類</el-button>
+                    <el-button type="primary" @click="dialogVisible = true; title = '添加分類'; clearData()">添加分類</el-button>
                 </div>
             </div>
         </template>
@@ -98,7 +115,7 @@ const showDialog = (row) => {
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="addCategory"> 確認 </el-button>
+                    <el-button type="primary" @click="title == '添加分類' ? addCategory() : updateCategory()"> 確認 </el-button>
                 </span>
             </template>
         </el-dialog>
