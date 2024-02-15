@@ -3,18 +3,49 @@ import {
     Edit,
     Delete
 } from '@element-plus/icons-vue'
+
 import { ref } from 'vue'
 const categories = ref([
 
 ])
+
 // 聲明一個異步函數
-import { articleCategoryListService } from '@/api/article.js'
+import { articleCategoryListService, articleCategoryAddService } from '@/api/article.js'
 const articleCategoryList = async () => {
     let result = await articleCategoryListService();
     categories.value = result.data;
 }
 articleCategoryList();
 
+//控制添加分類彈窗
+const dialogVisible = ref(false)
+
+//添加分類數據模型
+const categoryModel = ref({
+    categoryName: '',
+    categoryAlias: ''
+})
+//添加分類表單校驗
+const rules = {
+    categoryName: [
+        { required: true, message: '请输入分類名稱', trigger: 'blur' },
+    ],
+    categoryAlias: [
+        { required: true, message: '请输入分類别名', trigger: 'blur' },
+    ]
+}
+
+// 調用接口，添加表單
+import { ElMessage } from 'element-plus';
+const addCategory = async () => {
+    // 調用接口
+    let result = await articleCategoryAddService(categoryModel.value);
+    ElMessage.success('添加成功');
+
+    // 調用獲取所有文章分類的函數
+    articleCategoryList();
+    dialogVisible.value = false;
+}
 </script>
 <template>
     <el-card class="page-container">
@@ -22,7 +53,7 @@ articleCategoryList();
             <div class="header">
                 <span>文章分類</span>
                 <div class="extra">
-                    <el-button type="primary">添加分類</el-button>
+                    <el-button type="primary" @click="dialogVisible = true">添加分類</el-button>
                 </div>
             </div>
         </template>
@@ -40,6 +71,24 @@ articleCategoryList();
                 <el-empty description="沒有數據" />
             </template>
         </el-table>
+
+        <!-- 添加分類彈窗 -->
+        <el-dialog v-model="dialogVisible" title="添加分類" width="30%">
+            <el-form :model="categoryModel" :rules="rules" label-width="100px" style="padding-right: 30px">
+                <el-form-item label="分類名稱" prop="categoryName">
+                    <el-input v-model="categoryModel.categoryName" minlength="1" maxlength="10"></el-input>
+                </el-form-item>
+                <el-form-item label="分類别名" prop="categoryAlias">
+                    <el-input v-model="categoryModel.categoryAlias" minlength="1" maxlength="15"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="addCategory"> 確認 </el-button>
+                </span>
+            </template>
+        </el-dialog>
     </el-card>
 </template>
 
