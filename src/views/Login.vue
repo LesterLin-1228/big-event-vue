@@ -57,8 +57,10 @@ const register = async () => {
 // 綁定數據，重複使用註冊表單的數據模型
 // 表單數據校驗
 // 登入函數
+import { useTokenStore } from '@/stores/token.js'
 import { useRouter } from 'vue-router' // useRouter是Vue框架中的一個函數，用於在Vue組件中獲取路由器（router）對象。
 const router = useRouter()
+const tokenStore = useTokenStore()
 const login = async () => {
     // 調用接口完成登入
     let result = await userLoginService(registerData.value);
@@ -69,6 +71,8 @@ const login = async () => {
     // }
     // alert(result.message);
     ElMessage.success('登入成功')
+    // 把得到的token儲存到pinia中
+    tokenStore.setToken(result.data)
     // 跳轉首頁 借助路由完成跳轉
     router.push('/')
 }
