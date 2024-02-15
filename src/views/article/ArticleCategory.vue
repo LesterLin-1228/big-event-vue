@@ -46,6 +46,19 @@ const addCategory = async () => {
     articleCategoryList();
     dialogVisible.value = false;
 }
+
+// 定義變數，控制標題的展示
+const title = ref('')
+
+// 展示編輯彈窗
+const showDialog = (row) => {
+    dialogVisible.value = true; title.value = '編輯分類'
+    // 數據拷貝
+    categoryModel.value.categoryName = row.categoryName;
+    categoryModel.value.categoryAlias = row.categoryAlias;
+    // 擴展id屬性，傳到後端完成分類的修改
+    categoryModel.value.id = row.id;
+}
 </script>
 <template>
     <el-card class="page-container">
@@ -53,7 +66,7 @@ const addCategory = async () => {
             <div class="header">
                 <span>文章分類</span>
                 <div class="extra">
-                    <el-button type="primary" @click="dialogVisible = true">添加分類</el-button>
+                    <el-button type="primary" @click="dialogVisible = true; title = '添加分類'">添加分類</el-button>
                 </div>
             </div>
         </template>
@@ -63,7 +76,7 @@ const addCategory = async () => {
             <el-table-column label="分類别名" prop="categoryAlias"></el-table-column>
             <el-table-column label="操作" width="100">
                 <template #default="{ row }">
-                    <el-button :icon="Edit" circle plain type="primary"></el-button>
+                    <el-button :icon="Edit" circle plain type="primary" @click="showDialog(row)"></el-button>
                     <el-button :icon="Delete" circle plain type="danger"></el-button>
                 </template>
             </el-table-column>
@@ -73,7 +86,7 @@ const addCategory = async () => {
         </el-table>
 
         <!-- 添加分類彈窗 -->
-        <el-dialog v-model="dialogVisible" title="添加分類" width="30%">
+        <el-dialog v-model="dialogVisible" :title="title" width="30%">
             <el-form :model="categoryModel" :rules="rules" label-width="100px" style="padding-right: 30px">
                 <el-form-item label="分類名稱" prop="categoryName">
                     <el-input v-model="categoryModel.categoryName" minlength="1" maxlength="10"></el-input>
