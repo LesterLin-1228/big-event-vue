@@ -26,10 +26,12 @@ const pageSize = ref(3) // 每頁條數
 // 當每頁條數發生了變化，調用此函数
 const onSizeChange = (size) => {
     pageSize.value = size
+    articleList()
 }
 // 當前頁碼發生變化，調用此函数
 const onCurrentChange = (num) => {
     pageNum.value = num
+    articleList()
 }
 
 // 調用接口獲取文章分類數據
@@ -95,8 +97,8 @@ articleList();
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary">搜尋</el-button>
-                <el-button>重置</el-button>
+                <el-button type="primary" @click="articleList()">搜尋</el-button>
+                <el-button @click="categoryId = ''; state = ''; articleList()">重置</el-button>
             </el-form-item>
         </el-form>
         <!-- 文章列表 -->
