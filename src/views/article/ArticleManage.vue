@@ -84,6 +84,15 @@ const articleModel = ref({
     state: ''
 })
 
+// 導入token
+import { useTokenStore } from '@/stores/token.js';
+const tokenStore = useTokenStore();
+
+// 上傳成功的回調函數
+const uploadSuccess = (result) => {
+    articleModel.value.coverImg = result.data;
+    console.log(result.data)
+}
 </script>
 <template>
     <el-card class="page-container">
@@ -149,8 +158,15 @@ const articleModel = ref({
                     </el-select>
                 </el-form-item>
                 <el-form-item label="文章封面">
-
-                    <el-upload class="avatar-uploader" :auto-upload="false" :show-file-list="false">
+                    <!-- 
+                        auto-upload:設置是否自動上傳
+                        action:設置伺服器接口路徑
+                        name:設置上傳的文件字段名
+                        headers:設置上傳的請求頭
+                        on-success:設置上傳成功的回調函數
+                     -->
+                    <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false" action="/api/upload"
+                        name="file" :headers="{ 'Authorization': tokenStore.token }" :on-success="uploadSuccess">
                         <img v-if="articleModel.coverImg" :src="articleModel.coverImg" class="avatar" />
                         <el-icon v-else class="avatar-uploader-icon">
                             <Plus />
