@@ -35,7 +35,7 @@ const onCurrentChange = (num) => {
 }
 
 // 調用接口獲取文章分類數據
-import { articleCategoryListService, articleListService } from '@/api/article.js'
+import { articleCategoryListService, articleListService, articleAddService } from '@/api/article.js'
 const articleCategoryList = async () => {
     let result = await articleCategoryListService();
 
@@ -91,7 +91,24 @@ const tokenStore = useTokenStore();
 // 上傳成功的回調函數
 const uploadSuccess = (result) => {
     articleModel.value.coverImg = result.data;
-    console.log(result.data)
+    console.log(result.data);
+}
+
+// 添加文章
+import { ElMessage } from 'element-plus';
+const addArticle = async (clickState) => {
+    // 把發布狀態賦值給數據模型
+    articleModel.value.state = clickState;
+
+    // 調用接口
+    let result = await articleAddService(articleModel.value);
+    ElMessage.success(result.message ? result.message : '添加成功')
+
+    // 讓抽屜消失
+    visibleDrawer.value = false;
+
+    // 刷新當前列表
+    articleList();
 }
 </script>
 <template>
@@ -180,8 +197,8 @@ const uploadSuccess = (result) => {
                     </div>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">發布</el-button>
-                    <el-button type="info">草稿</el-button>
+                    <el-button type="primary" @click="addArticle('已發布')">發布</el-button>
+                    <el-button type="info" @click="addArticle('草稿')">草稿</el-button>
                 </el-form-item>
             </el-form>
         </el-drawer>
@@ -239,7 +256,7 @@ const uploadSuccess = (result) => {
     width: 100%;
 
     :deep(.ql-editor) {
-        min-height: 200px;
+        min-height: 300px;
     }
 }
 </style>
