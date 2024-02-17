@@ -96,7 +96,7 @@ const uploadSuccess = (result) => {
 }
 
 // 添加文章
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 const addArticle = async (clickState) => {
     // 把發布狀態賦值給數據模型
     articleModel.value.state = clickState;
@@ -148,6 +148,33 @@ const clearData = () => {
     console.log('content=' + articleModel.value.content);
 }
 
+// 刪除文章
+const deleteArticle = (row) => {
+    ElMessageBox.confirm(
+        '確認刪除該文章?',
+        '溫馨提示',
+        {
+            confirmButtonText: '確認',
+            cancelButtonText: '取消',
+            type: 'warning',
+        })
+        .then(async () => {
+            // 調用接口
+            let result = await articleDeleteService(row.id);
+            ElMessage({
+                type: 'success',
+                message: '刪除成功',
+            })
+            // 刷新列表
+            articleList();
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '取消刪除',
+            })
+        })
+}
 </script>
 <template>
     <el-card class="page-container">
