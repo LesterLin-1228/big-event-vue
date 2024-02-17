@@ -21,7 +21,7 @@ const articles = ref([])
 // 分頁條數據模型
 const pageNum = ref(1) // 當前頁
 const total = ref(20) // 總條數
-const pageSize = ref(3) // 每頁條數
+const pageSize = ref(5) // 每頁條數
 
 // 當每頁條數發生了變化，調用此函数
 const onSizeChange = (size) => {
@@ -35,7 +35,7 @@ const onCurrentChange = (num) => {
 }
 
 // 調用接口獲取文章分類數據
-import { articleCategoryListService, articleListService, articleAddService } from '@/api/article.js'
+import { articleCategoryListService, articleListService, articleAddService, articleUpdateService, articleDeleteService } from '@/api/article.js'
 const articleCategoryList = async () => {
     let result = await articleCategoryListService();
 
@@ -70,6 +70,7 @@ const articleList = async () => {
 }
 articleList();
 
+// 導入富文本編輯器
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { Plus } from '@element-plus/icons-vue'
@@ -102,7 +103,7 @@ const addArticle = async (clickState) => {
 
     // 調用接口
     let result = await articleAddService(articleModel.value);
-    ElMessage.success(result.message ? result.message : '添加成功')
+    ElMessage.success('添加成功')
 
     // 讓抽屜消失
     visibleDrawer.value = false;
@@ -110,6 +111,43 @@ const addArticle = async (clickState) => {
     // 刷新當前列表
     articleList();
 }
+
+// 定義變數控制文章標題的展示
+const articleTitle = ref('')
+// 展示編輯抽屜
+const showDrawer = (row) => {
+    visibleDrawer.value = true;
+    articleTitle.value = '修改文章';
+    // 數據拷貝
+    articleModel.value.title = row.title;
+    articleModel.value.categoryId = row.categoryId;
+    articleModel.value.coverImg = row.coverImg;
+    articleModel.value.content = row.content;
+    articleModel.value.state = row.state;
+    // 擴展id屬性，傳到後端完成文章的修改
+    articleModel.value.id = row.id;
+}
+// 修改文章
+const updateArticle = async (clickState) => {
+    // 把發布的狀態賦值給數據模型
+    articleModel.value.state = clickState;
+    // 調用修改文章接口
+    let result = await articleUpdateService(articleModel.value);
+    ElMessage.success('修改成功');
+    articleList();
+    visibleDrawer.value = false;
+}
+// 清空數據模型
+const clearData = () => {
+    articleModel.value.title = '';
+    articleModel.value.categoryId = '';
+    articleModel.value.coverImg = '';
+    // 富文本編輯器無法辨識，需要用<p></p>來代替
+    articleModel.value.content = '<p></p>';
+    articleModel.value.state = '';
+    console.log('content=' + articleModel.value.content);
+}
+
 </script>
 <template>
     <el-card class="page-container">
@@ -117,7 +155,8 @@ const addArticle = async (clickState) => {
             <div class="header">
                 <span>文章管理</span>
                 <div class="extra">
-                    <el-button type="primary" @click="visibleDrawer = true">添加文章</el-button>
+                    <el-button type="primary"
+                        @click="visibleDrawer = true; articleTitle = '添加文章'; clearData()">添加文章</el-button>
                 </div>
             </div>
         </template>
@@ -149,8 +188,8 @@ const addArticle = async (clickState) => {
             <el-table-column label="狀態" prop="state"></el-table-column>
             <el-table-column label="操作" width="100">
                 <template #default="{ row }">
-                    <el-button :icon="Edit" circle plain type="primary"></el-button>
-                    <el-button :icon="Delete" circle plain type="danger"></el-button>
+                    <el-button :icon="Edit" circle plain type="primary" @click="showDrawer(row)"></el-button>
+                    <el-button :icon="Delete" circle plain type="danger" @click="deleteArticle(row)"></el-button>
                 </template>
             </el-table-column>
             <template #empty>
@@ -158,11 +197,11 @@ const addArticle = async (clickState) => {
             </template>
         </el-table>
         <!-- 分頁條 -->
-        <el-pagination v-model:current-page="pageNum" v-model:page-size="pageSize" :page-sizes="[3, 5, 10, 15]"
+        <el-pagination v-model:current-page="pageNum" v-model:page-size="pageSize" :page-sizes="[5, 10, 15]"
             layout="jumper, total, sizes, prev, pager, next" background :total="total" @size-change="onSizeChange"
             @current-change="onCurrentChange" style="margin-top: 20px; justify-content: flex-end" />
         <!-- 抽屉 -->
-        <el-drawer v-model="visibleDrawer" title="添加文章" direction="rtl" size="50%">
+        <el-drawer v-model="visibleDrawer" :title="articleTitle" direction="rtl" size="50%">
             <!-- 添加文章表單 -->
             <el-form :model="articleModel" label-width="100px">
                 <el-form-item label="文章標題">
@@ -197,8 +236,11 @@ const addArticle = async (clickState) => {
                     </div>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="addArticle('已發布')">發布</el-button>
-                    <el-button type="info" @click="addArticle('草稿')">草稿</el-button>
+                    <el-button type="primary"
+                        @click="articleTitle == '添加文章' ? addArticle('已發布') : updateArticle('已發布')">發布</el-button>
+                    <el-button type="info"
+                        @click="articleTitle == '添加文章' ? addArticle('草稿') : updateArticle('草稿')">草稿</el-button>
+                    <el-button @click="visibleDrawer = false">取消</el-button>
                 </el-form-item>
             </el-form>
         </el-drawer>

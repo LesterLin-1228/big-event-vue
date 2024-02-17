@@ -47,7 +47,7 @@ const addCategory = async () => {
     dialogVisible.value = false;
 }
 
-// 定義變數，控制標題的展示
+// 定義變數，控制分類標題的展示
 const title = ref('')
 
 // 展示編輯彈窗
