@@ -23,6 +23,48 @@ const getUserInfo = async () => {
 }
 getUserInfo();
 
+// 選項被點擊後，調用的函數
+import { useRouter } from 'vue-router';
+const router = useRouter();
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useTokenStore } from '@/stores/token';
+const tokenStore = useTokenStore();
+const handleCommand = (command) => {
+    // 判斷指令
+    if (command === 'logout') {
+        // 退出登入
+        ElMessageBox.confirm(
+            '確認要登出?',
+            '溫馨提示',
+            {
+                confirmButtonText: '確認',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        )
+            .then(async () => {
+                // 1.清空pinia儲存的token和個人訊息
+                tokenStore.removeToken();
+                userInfoStore.removeInfo();
+                // 2.跳轉到登入頁面
+                router.push('/login');
+                ElMessage({
+                    type: 'success',
+                    message: '登出成功',
+                })
+            })
+            .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '取消登出',
+                })
+            })
+    } else {
+        // 路由
+        router.push('/user/' + command)
+    }
+}
+
 </script>
 
 <template>
@@ -78,7 +120,9 @@ getUserInfo();
             <!-- 頭部區域 -->
             <el-header>
                 <div>用戶暱稱：<strong>{{ userInfoStore.info.nickname }}</strong></div>
-                <el-dropdown placement="bottom-end">
+                <!-- 下拉選單 -->
+                <!-- command:選項被點擊後會觸發，在事件函數上可以聲明一個函數，接收選項對應的指令 -->
+                <el-dropdown placement="bottom-end" @command="handleCommand">
                     <span class="el-dropdown__box">
                         <el-avatar :src="userInfoStore.info.userPic ? userInfoStore.info.userPic : avatar" />
                         <el-icon>
@@ -87,9 +131,9 @@ getUserInfo();
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item command="profile" :icon="User">基本資料</el-dropdown-item>
+                            <el-dropdown-item command="info" :icon="User">基本資料</el-dropdown-item>
                             <el-dropdown-item command="avatar" :icon="Crop">更換頭像</el-dropdown-item>
-                            <el-dropdown-item command="password" :icon="EditPen">重置密碼</el-dropdown-item>
+                            <el-dropdown-item command="resetPassword" :icon="EditPen">重置密碼</el-dropdown-item>
                             <el-dropdown-item command="logout" :icon="SwitchButton">登出</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
