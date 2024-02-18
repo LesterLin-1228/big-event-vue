@@ -37,14 +37,20 @@ const rules = {
 
 // 調用接口，添加表單
 import { ElMessage } from 'element-plus';
+const formRef = ref(null)
 const addCategory = async () => {
-    // 調用接口
-    let result = await articleCategoryAddService(categoryModel.value);
-    ElMessage.success('添加成功');
+    formRef.value.validate(async (valid) => {
+        if (valid) {
+            // 調用接口
+            let result = await articleCategoryAddService(categoryModel.value);
+            ElMessage.success('添加成功');
 
-    // 調用獲取所有文章分類的函數
-    articleCategoryList();
-    dialogVisible.value = false;
+            // 調用獲取所有文章分類的函數
+            articleCategoryList();
+            dialogVisible.value = false;
+        }
+    })
+
 }
 
 // 定義變數，控制分類標題的展示
@@ -62,13 +68,17 @@ const showDialog = (row) => {
 
 // 編輯分類
 const updateCategory = async () => {
-    // 調用接口
-    let result = await articleCategoryUpdateService(categoryModel.value);
-    ElMessage.success('修改成功')
+    formRef.value.validate(async (valid) => {
+        if (valid) {
+            // 調用接口
+            let result = await articleCategoryUpdateService(categoryModel.value);
+            ElMessage.success('修改成功')
 
-    // 調用獲取所有文章分類的函數
-    articleCategoryList();
-    dialogVisible.value = false;
+            // 調用獲取所有文章分類的函數
+            articleCategoryList();
+            dialogVisible.value = false;
+        }
+    })
 }
 
 // 清空模型數據
@@ -135,7 +145,7 @@ const deleteCategory = (row) => {
 
         <!-- 添加分類彈窗 -->
         <el-dialog v-model="dialogVisible" :title="title" width="30%">
-            <el-form :model="categoryModel" :rules="rules" label-width="100px" style="padding-right: 30px">
+            <el-form ref="formRef" :model="categoryModel" :rules="rules" label-width="100px" style="padding-right: 30px">
                 <el-form-item label="分類名稱" prop="categoryName">
                     <el-input v-model="categoryModel.categoryName" minlength="1" maxlength="10"></el-input>
                 </el-form-item>
