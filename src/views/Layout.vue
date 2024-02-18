@@ -10,7 +10,19 @@ import {
     CaretBottom
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/default.png'
-import router from '@/router';
+
+// 調用函數，獲取用戶詳細訊息
+import { userInfoService } from '@/api/user';
+import { useUserInfoStore } from '@/stores/userInfo';
+const userInfoStore = useUserInfoStore();
+const getUserInfo = async () => {
+    // 調用接口
+    let result = await userInfoService();
+    // 數據儲存到pinia中
+    userInfoStore.setInfo(result.data);
+}
+getUserInfo();
+
 </script>
 
 <template>
@@ -65,10 +77,10 @@ import router from '@/router';
         <el-container>
             <!-- 頭部區域 -->
             <el-header>
-                <div>用戶暱稱：<strong>Lester</strong></div>
+                <div>用戶暱稱：<strong>{{ userInfoStore.info.nickname }}</strong></div>
                 <el-dropdown placement="bottom-end">
                     <span class="el-dropdown__box">
-                        <el-avatar :src="avatar" />
+                        <el-avatar :src="userInfoStore.info.userPic ? userInfoStore.info.userPic : avatar" />
                         <el-icon>
                             <CaretBottom />
                         </el-icon>

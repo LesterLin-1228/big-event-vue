@@ -48,7 +48,7 @@ instance.interceptors.response.use(
     err => {
         // 判斷響應狀態碼，如果為401，表示未登入，提示請登入並跳轉到登入頁面
         if (err.response.status === 401) {
-            ElMessage.error('請先登入')
+            ElMessage.info('請先登入')
             router.push('/login')
         } else {
             ElMessage.error('服務異常')

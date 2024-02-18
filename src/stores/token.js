@@ -25,5 +25,5 @@ export const useTokenStore = defineStore('token', () => {
         token, setToken, removeToken
     }
 }, {
-    persist: true // 持久化儲存
+    persist: true // 持久化儲存，避免刷新頁面就消失
 });
