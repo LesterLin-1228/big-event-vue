@@ -97,19 +97,24 @@ const uploadSuccess = (result) => {
 
 // 添加文章
 import { ElMessage, ElMessageBox } from 'element-plus';
+const formRef = ref(null)
 const addArticle = async (clickState) => {
-    // 把發布狀態賦值給數據模型
-    articleModel.value.state = clickState;
+    formRef.value.validate(async (valid) => {
+        if (valid) {
+            // 把發布狀態賦值給數據模型
+            articleModel.value.state = clickState;
 
-    // 調用接口
-    let result = await articleAddService(articleModel.value);
-    ElMessage.success('添加成功')
+            // 調用接口
+            let result = await articleAddService(articleModel.value);
+            ElMessage.success('添加成功')
 
-    // 讓抽屜消失
-    visibleDrawer.value = false;
+            // 讓抽屜消失
+            visibleDrawer.value = false;
 
-    // 刷新當前列表
-    articleList();
+            // 刷新當前列表
+            articleList();
+        }
+    })
 }
 
 // 定義變數控制文章標題的展示
@@ -129,13 +134,17 @@ const showDrawer = (row) => {
 }
 // 修改文章
 const updateArticle = async (clickState) => {
-    // 把發布的狀態賦值給數據模型
-    articleModel.value.state = clickState;
-    // 調用修改文章接口
-    let result = await articleUpdateService(articleModel.value);
-    ElMessage.success('修改成功');
-    articleList();
-    visibleDrawer.value = false;
+    formRef.value.validate(async (valid) => {
+        if (valid) {
+            // 把發布的狀態賦值給數據模型
+            articleModel.value.state = clickState;
+            // 調用修改文章接口
+            let result = await articleUpdateService(articleModel.value);
+            ElMessage.success('修改成功');
+            articleList();
+            visibleDrawer.value = false;
+        }
+    })
 }
 // 清空數據模型
 const clearData = () => {
@@ -175,6 +184,26 @@ const deleteArticle = (row) => {
             })
         })
 }
+
+//添加文章表單校驗
+const rules = {
+    title: [
+        { required: true, message: '请输入標題', trigger: 'blur' },
+        {
+            pattern: /^\S{1,20}$/,
+            message: '必须是1-20位的字，不包含空白',
+            trigger: 'blur'
+        }
+    ],
+    categoryId: [
+        { required: true, message: '请输入分類', trigger: 'blur' },
+    ],
+    coverImg: [
+        { required: true, message: '请選擇封面', trigger: 'blur' },
+    ]
+
+}
+
 </script>
 <template>
     <el-card class="page-container">
@@ -230,17 +259,17 @@ const deleteArticle = (row) => {
         <!-- 抽屉 -->
         <el-drawer v-model="visibleDrawer" :title="articleTitle" direction="rtl" size="50%">
             <!-- 添加文章表單 -->
-            <el-form :model="articleModel" label-width="100px">
-                <el-form-item label="文章標題">
+            <el-form ref="formRef" :model="articleModel" :rules="rules" label-width="100px">
+                <el-form-item label="文章標題" prop="title">
                     <el-input v-model="articleModel.title" placeholder="請輸入標題"></el-input>
                 </el-form-item>
-                <el-form-item label="文章分類">
+                <el-form-item label="文章分類" prop="categoryId">
                     <el-select placeholder="請選擇" v-model="articleModel.categoryId">
                         <el-option v-for="c in categories" :key="c.id" :label="c.categoryName" :value="c.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="文章封面">
+                <el-form-item label="文章封面" prop="coverImg">
                     <!-- 
                         auto-upload:設置是否自動上傳
                         action:設置伺服器接口路徑

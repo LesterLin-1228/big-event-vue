@@ -8,7 +8,7 @@ const rules = {
         { required: true, message: '請輸入用戶暱稱', trigger: 'blur' },
         {
             pattern: /^\S{1,10}$/,
-            message: '必须是1-10位的非空字符串',
+            message: '必须是1-10位的字，不包含空白',
             trigger: 'blur'
         }
     ],
