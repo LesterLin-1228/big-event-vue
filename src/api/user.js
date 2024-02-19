@@ -29,3 +29,11 @@ export const userInfoService = () => {
 export const userInfoUpdateService = (userInfoData) => {
     return request.put('/user/update', userInfoData)
 }
+
+// 修改頭像
+export const userAvatarUpdateService = (avatarUrl) => {
+    // 借用UrlSearchParams完成傳遞(也可以直接用query方式)
+    const params = new URLSearchParams();
+    params.append('avatarUrl', avatarUrl)
+    return request.patch('/user/updateAvatar', params)
+}

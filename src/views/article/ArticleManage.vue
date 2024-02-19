@@ -273,7 +273,7 @@ const rules = {
                     <!-- 
                         auto-upload:設置是否自動上傳
                         action:設置伺服器接口路徑
-                        name:設置上傳的文件字段名
+                        name:設置上傳的文件字段名，需與後端參數相同，才能解析
                         headers:設置上傳的請求頭
                         on-success:設置上傳成功的回調函數
                      -->
