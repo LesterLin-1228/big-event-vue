@@ -43,14 +43,6 @@ import { userRegisterService, userLoginService } from '@/api/user.js'
 const register = async () => {
     // registerData是響應式對象，需要添加value獲取值
     let result = await userRegisterService(registerData.value);
-    // if(result.code===0){
-    //     // 成功
-    //     alert(result.message);
-    // }else{
-    //     // 失敗
-    //     alert(result.message);
-    // }
-    // alert(result.message);
     ElMessage.success('註冊成功')
 }
 
@@ -64,12 +56,6 @@ const tokenStore = useTokenStore()
 const login = async () => {
     // 調用接口完成登入
     let result = await userLoginService(registerData.value);
-    // if(result.code===0){
-    //     alert(result.message);
-    // }else{
-    //     alert(result.message);
-    // }
-    // alert(result.message);
     ElMessage.success('登入成功')
     // 把得到的token儲存到pinia中
     tokenStore.setToken(result.data)

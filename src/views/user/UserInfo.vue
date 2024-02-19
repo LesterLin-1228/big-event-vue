@@ -21,13 +21,6 @@ const rules = {
 // 修改個人訊息
 import { userInfoUpdateService } from '@/api/user'
 import { ElMessage } from 'element-plus';
-// const updateUserInfo = async () => {
-//     // 調用接口
-//     let result = await userInfoUpdateService(userInfo.value);
-//     ElMessage.success('修改成功');
-//     // 修改pinia中的個人訊息
-//     userInfoStore.setInfo(userInfo.value);
-// }
 // 優化點擊修改時再次驗證是否通過規則
 const formRef = ref(null)
 const updateUserInfo = async () => {
