@@ -42,3 +42,13 @@ export const userAvatarUpdateService = (avatarUrl) => {
 export const userPwdUpdateService = (pwdData) => {
     return request.patch('/user/updatePwd', pwdData)
 }
+
+// 忘記密碼送出郵件
+export const userPwdForgotService = (forgotPwdData) => {
+    // 借用UrlSearchParams完成傳遞
+    const params = new URLSearchParams()
+    for (let key in forgotPwdData) {
+        params.append(key, forgotPwdData[key])
+    }
+    return request.post('/user/sendResetPwdMail', params)
+}

@@ -1,15 +1,20 @@
 <script setup>
-import { User, Lock } from '@element-plus/icons-vue'
+import { User, Lock, Message } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-// 控制註冊和登入表單的顯示， 默認顯示註冊
-const isRegister = ref(false)
+// 控制註冊、登入和忘記密碼表單的顯示， 默認顯示登入
+// const isRegister = ref(false)
+const currentPage = ref('login');
+const showPage = (page) => {
+    currentPage.value = page;
+};
 
 // 定義數據模型
 const registerData = ref({
     username: '',
     password: '',
-    rePassword: ''
+    rePassword: '',
+    email: ''
 })
 
 // 校驗密碼的函數
@@ -35,11 +40,14 @@ const rules = {
     ],
     rePassword: [
         { validator: checkRePassword, trigger: 'blur' }
+    ],
+    email: [
+        { required: true, message: '請輸入信箱', trigger: 'blur' }
     ]
 }
 
 // 調用後端接口完成註冊
-import { userRegisterService, userLoginService } from '@/api/user.js'
+import { userRegisterService, userLoginService, userPwdForgotService } from '@/api/user.js'
 const register = async () => {
     // registerData是響應式對象，需要添加value獲取值
     let result = await userRegisterService(registerData.value);
@@ -72,14 +80,52 @@ const clearRegisterData = () => {
     }
 }
 
+// 忘記密碼送出郵件
+const sendResetPwdMail = async () => {
+    let result = await userPwdForgotService(registerData.value);
+    ElMessage.success('送出郵件成功')
+    router.push('/login')
+}
+
+
 </script>
 
 <template>
     <el-row class="login-page">
         <el-col :span="12" class="bg"></el-col>
         <el-col :span="6" :offset="3" class="form">
+            <!-- 登入表單 -->
+            <el-form ref="form" size="large" autocomplete="off" v-if="currentPage === 'login'" :model="registerData"
+                :rules="rules">
+                <el-form-item>
+                    <h1>登入</h1>
+                </el-form-item>
+                <el-form-item prop="username">
+                    <el-input :prefix-icon="User" placeholder="請輸入用戶名" v-model="registerData.username"></el-input>
+                </el-form-item>
+                <el-form-item prop="password">
+                    <el-input name="password" :prefix-icon="Lock" type="password" placeholder="請輸入密碼"
+                        v-model="registerData.password"></el-input>
+                </el-form-item>
+                <el-form-item class="flex">
+                    <div class="flex">
+                        <el-checkbox>記住我</el-checkbox>
+                        <el-link type="primary" :underline="false" @click="showPage('forgotPwd')">忘記密碼？</el-link>
+                    </div>
+                </el-form-item>
+                <!-- 登入按鈕 -->
+                <el-form-item>
+                    <el-button class="button" type="primary" auto-insert-space @click="login">登入</el-button>
+                </el-form-item>
+                <el-form-item class="flex">
+                    <el-link type="info" :underline="false" @click="showPage('register'); clearRegisterData()">
+                        註冊 →
+                    </el-link>
+                </el-form-item>
+            </el-form>
             <!-- 註冊表單 -->
-            <el-form ref="form" size="large" autocomplete="off" v-if="isRegister" :model="registerData" :rules="rules">
+            <el-form ref="form" size="large" autocomplete="off" v-if="currentPage === 'register'" :model="registerData"
+                :rules="rules">
                 <el-form-item>
                     <h1>註冊</h1>
                 </el-form-item>
@@ -101,36 +147,31 @@ const clearRegisterData = () => {
                     </el-button>
                 </el-form-item>
                 <el-form-item class="flex">
-                    <el-link type="info" :underline="false" @click="isRegister = false; clearRegisterData()">
-                        ← 返回
+                    <el-link type="info" :underline="false" @click="showPage('login'); clearRegisterData()">
+                        ← 登入
                     </el-link>
                 </el-form-item>
             </el-form>
-            <!-- 登入表單 -->
-            <el-form ref="form" size="large" autocomplete="off" v-else :model="registerData" :rules="rules">
+            <!-- 忘記密碼表單 -->
+            <el-form ref="form" size="large" autocomplete="off" v-if="currentPage === 'forgotPwd'" :model="registerData"
+                :rules="rules">
                 <el-form-item>
-                    <h1>登入</h1>
+                    <h1>忘記密碼</h1>
                 </el-form-item>
                 <el-form-item prop="username">
                     <el-input :prefix-icon="User" placeholder="請輸入用戶名" v-model="registerData.username"></el-input>
                 </el-form-item>
-                <el-form-item prop="password">
-                    <el-input name="password" :prefix-icon="Lock" type="password" placeholder="請輸入密碼"
-                        v-model="registerData.password"></el-input>
+                <el-form-item prop="email">
+                    <el-input name="email" :prefix-icon="Message" type="email" placeholder="請輸入信箱"
+                        v-model="registerData.email"></el-input>
                 </el-form-item>
-                <el-form-item class="flex">
-                    <div class="flex">
-                        <el-checkbox>記住我</el-checkbox>
-                        <el-link type="primary" :underline="false">忘記密碼？</el-link>
-                    </div>
-                </el-form-item>
-                <!-- 登入按鈕 -->
+                <!-- 忘記密碼按鈕 -->
                 <el-form-item>
-                    <el-button class="button" type="primary" auto-insert-space @click="login">登入</el-button>
+                    <el-button class="button" type="primary" auto-insert-space @click="sendResetPwdMail">送出郵件</el-button>
                 </el-form-item>
                 <el-form-item class="flex">
-                    <el-link type="info" :underline="false" @click="isRegister = true; clearRegisterData()">
-                        註冊 →
+                    <el-link type="info" :underline="false" @click="showPage('login'); clearRegisterData()">
+                        ← 登入
                     </el-link>
                 </el-form-item>
             </el-form>
