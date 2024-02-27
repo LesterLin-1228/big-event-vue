@@ -107,7 +107,7 @@ const sendMail = async () => {
                     <el-input :prefix-icon="User" placeholder="請輸入用戶名" v-model="registerData.username"></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input name="password" :prefix-icon="Lock" type="password" placeholder="請輸入密碼"
+                    <el-input name="password" :prefix-icon="Lock" type="password" placeholder="請輸入密碼" show-password
                         v-model="registerData.password"></el-input>
                 </el-form-item>
                 <el-form-item class="flex">
@@ -136,11 +136,11 @@ const sendMail = async () => {
                     <el-input :prefix-icon="User" placeholder="請輸入用戶名" v-model="registerData.username"></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input :prefix-icon="Lock" type="password" placeholder="請輸入密碼"
+                    <el-input :prefix-icon="Lock" type="password" placeholder="請輸入密碼" show-password
                         v-model="registerData.password"></el-input>
                 </el-form-item>
                 <el-form-item prop="rePassword">
-                    <el-input :prefix-icon="Lock" type="password" placeholder="請再次輸入密碼"
+                    <el-input :prefix-icon="Lock" type="password" placeholder="請再次輸入密碼" show-password
                         v-model="registerData.rePassword"></el-input>
                 </el-form-item>
                 <!-- 註冊按鈕 -->

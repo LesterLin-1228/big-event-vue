@@ -17,6 +17,7 @@ instance.interceptors.request.use(
         const tokenStore = useTokenStore();
         // 判斷有沒有token
         if (tokenStore.token) {
+            // 將 token 添加到請求的 Authorization 標頭中。
             config.headers.Authorization = tokenStore.token
         }
         return config;

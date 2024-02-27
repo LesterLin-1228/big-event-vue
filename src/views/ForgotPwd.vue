@@ -54,10 +54,10 @@ const updatePwd = async () => {
             <el-col :span="12">
                 <el-form ref="formRef" :model="pwdData" :rules="rules" label-width="100px" size="large">
                     <el-form-item label="新密碼" prop="new_pwd">
-                        <el-input v-model="pwdData.new_pwd" type="password"></el-input>
+                        <el-input v-model="pwdData.new_pwd" type="password" show-password></el-input>
                     </el-form-item>
                     <el-form-item label="確認新密碼" prop="re_pwd">
-                        <el-input v-model="pwdData.re_pwd" type="password"></el-input>
+                        <el-input v-model="pwdData.re_pwd" type="password" show-password></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="updatePwd">重設密碼</el-button>
