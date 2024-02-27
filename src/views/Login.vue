@@ -48,10 +48,18 @@ const rules = {
 
 // 調用後端接口完成註冊
 import { userRegisterService, userLoginService, userPwdForgotService } from '@/api/user.js'
+const formRegister = ref(null)
 const register = async () => {
-    // registerData是響應式對象，需要添加value獲取值
-    let result = await userRegisterService(registerData.value);
-    ElMessage.success('註冊成功')
+    formRegister.value.validate(async (valid) => {
+        if (valid) {
+            // registerData是響應式對象，需要添加value獲取值
+            let result = await userRegisterService(registerData.value);
+            ElMessage.success('註冊成功')
+        } else {
+            ElMessage.error('請確認用戶名及密碼');
+        }
+    })
+
 }
 
 // 綁定數據，重複使用註冊表單的數據模型
@@ -61,14 +69,21 @@ import { useTokenStore } from '@/stores/token.js'
 import { useRouter } from 'vue-router' // useRouter是Vue框架中的一個函數，用於在Vue組件中獲取路由器（router）對象。
 const router = useRouter()
 const tokenStore = useTokenStore()
+const formLogin = ref(null)
 const login = async () => {
-    // 調用接口完成登入
-    let result = await userLoginService(registerData.value);
-    ElMessage.success('登入成功')
-    // 把得到的token儲存到pinia中
-    tokenStore.setToken(result.data)
-    // 跳轉首頁 借助路由完成跳轉
-    router.push('/')
+    formLogin.value.validate(async (valid) => {
+        if (valid) {
+            // 調用接口完成登入
+            let result = await userLoginService(registerData.value);
+            ElMessage.success('登入成功')
+            // 把得到的token儲存到pinia中
+            tokenStore.setToken(result.data)
+            // 跳轉首頁 借助路由完成跳轉
+            router.push('/')
+        } else {
+            ElMessage.error('請確認用戶名及密碼');
+        }
+    });
 }
 
 // 定義函數清空數據模型內的數據
@@ -81,13 +96,22 @@ const clearRegisterData = () => {
 }
 
 // 忘記密碼送出郵件
+const formForgotPwd = ref(null)
 const sendMail = async () => {
-    // 調用接口送出郵件
-    let result = await userPwdForgotService(registerData.value);
-    ElMessage.success('送出郵件成功')
-    // 把得到的token儲存到pinia中
-    tokenStore.setToken(result.data)
-    router.push('/login')
+    formForgotPwd.value.validate(async (valid) => {
+        if (valid) {
+            // 調用接口送出郵件
+            let result = await userPwdForgotService(registerData.value);
+            ElMessage.success('送出郵件成功')
+            // 把得到的token儲存到pinia中
+            tokenStore.setToken(result.data)
+            router.push('/login')
+        } else {
+            ElMessage.error('請確認用戶名及信箱');
+        }
+
+    })
+
 }
 
 
@@ -98,7 +122,7 @@ const sendMail = async () => {
         <el-col :span="12" class="bg"></el-col>
         <el-col :span="6" :offset="3" class="form">
             <!-- 登入表單 -->
-            <el-form ref="form" size="large" autocomplete="off" v-if="currentPage === 'login'" :model="registerData"
+            <el-form ref="formLogin" size="large" autocomplete="off" v-if="currentPage === 'login'" :model="registerData"
                 :rules="rules">
                 <el-form-item>
                     <h1>登入</h1>
@@ -110,25 +134,22 @@ const sendMail = async () => {
                     <el-input name="password" :prefix-icon="Lock" type="password" placeholder="請輸入密碼" show-password
                         v-model="registerData.password"></el-input>
                 </el-form-item>
-                <el-form-item class="flex">
-                    <div class="flex">
-                        <el-checkbox>記住我</el-checkbox>
-                        <el-link type="primary" :underline="false" @click="showPage('forgotPwd')">忘記密碼？</el-link>
-                    </div>
-                </el-form-item>
                 <!-- 登入按鈕 -->
                 <el-form-item>
                     <el-button class="button" type="primary" auto-insert-space @click="login">登入</el-button>
                 </el-form-item>
                 <el-form-item class="flex">
-                    <el-link type="info" :underline="false" @click="showPage('register'); clearRegisterData()">
-                        註冊 →
-                    </el-link>
+                    <div class="flex">
+                        <el-link type="info" :underline="false" @click="showPage('register'); clearRegisterData()">
+                            註冊 →
+                        </el-link>
+                        <el-link type="primary" :underline="false" @click="showPage('forgotPwd')">忘記密碼？</el-link>
+                    </div>
                 </el-form-item>
             </el-form>
             <!-- 註冊表單 -->
-            <el-form ref="form" size="large" autocomplete="off" v-if="currentPage === 'register'" :model="registerData"
-                :rules="rules">
+            <el-form ref="formRegister" size="large" autocomplete="off" v-if="currentPage === 'register'"
+                :model="registerData" :rules="rules">
                 <el-form-item>
                     <h1>註冊</h1>
                 </el-form-item>
@@ -156,8 +177,8 @@ const sendMail = async () => {
                 </el-form-item>
             </el-form>
             <!-- 忘記密碼表單 -->
-            <el-form ref="form" size="large" autocomplete="off" v-if="currentPage === 'forgotPwd'" :model="registerData"
-                :rules="rules">
+            <el-form ref="formForgotPwd" size="large" autocomplete="off" v-if="currentPage === 'forgotPwd'"
+                :model="registerData" :rules="rules">
                 <el-form-item>
                     <h1>忘記密碼</h1>
                 </el-form-item>
