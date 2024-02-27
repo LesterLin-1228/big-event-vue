@@ -50,5 +50,10 @@ export const userPwdForgotService = (forgotPwdData) => {
     for (let key in forgotPwdData) {
         params.append(key, forgotPwdData[key])
     }
-    return request.post('/user/sendResetPwdMail', params)
+    return request.post('/user/sendMail', params)
+}
+
+// 重設密碼
+export const userResetPwdService = (pwdData) => {
+    return request.patch('/user/resetPwd', pwdData)
 }

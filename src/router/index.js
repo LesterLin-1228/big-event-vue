@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // 導入組件
 import LoginVue from '@/views/Login.vue';
 import LayoutVue from '@/views/Layout.vue';
-
+import ForgotPwd from '@/views/ForgotPwd.vue';
 import ArticleCategoryVue from "@/views/article/ArticleCategory.vue";
 import ArticleManageVue from "@/views/article/ArticleManage.vue";
 import UserAvatarVue from "@/views/user/UserAvatar.vue";
@@ -13,6 +13,7 @@ import UserResetPasswordVue from "@/views/user/UserResetPassword.vue";
 // 定義路由關係
 const routes = [
     { path: '/login', component: LoginVue },
+    { path: '/forgotPwd', component: ForgotPwd },
     {
         path: '/', component: LayoutVue, redirect: 'article/manage', children: [
             { path: 'article/category', component: ArticleCategoryVue },

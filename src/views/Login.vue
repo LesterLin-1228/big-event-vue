@@ -81,9 +81,12 @@ const clearRegisterData = () => {
 }
 
 // 忘記密碼送出郵件
-const sendResetPwdMail = async () => {
+const sendMail = async () => {
+    // 調用接口送出郵件
     let result = await userPwdForgotService(registerData.value);
     ElMessage.success('送出郵件成功')
+    // 把得到的token儲存到pinia中
+    tokenStore.setToken(result.data)
     router.push('/login')
 }
 
@@ -167,7 +170,7 @@ const sendResetPwdMail = async () => {
                 </el-form-item>
                 <!-- 忘記密碼按鈕 -->
                 <el-form-item>
-                    <el-button class="button" type="primary" auto-insert-space @click="sendResetPwdMail">送出郵件</el-button>
+                    <el-button class="button" type="primary" auto-insert-space @click="sendMail">送出郵件</el-button>
                 </el-form-item>
                 <el-form-item class="flex">
                     <el-link type="info" :underline="false" @click="showPage('login'); clearRegisterData()">
